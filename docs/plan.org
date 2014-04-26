@@ -1,0 +1,103 @@
+#+TITLE: Cheno Stenography Outline
+#+AUTHOR: Calvin Beck
+
+* Introduction
+  The main goal of Cheno is to provide a portable C library to help
+  with writing stenography applications. Mainly the goal is to write
+  code which can be executed on many different microcontrollers so
+  that people can make good hardware stenotypes with minimal effort in
+  software (if any), however people may use Cheno in more typical
+  applications to do stenography related work. Whether you want to
+  write an application like [[http://plover.stenoknight.com/][Plover]], or write something to translate
+  logs of chords into actual words, Cheno should be able to help you!
+** Goals
+   There are several goals for Cheno
+
+   - Run on as many cheap microcontrollers as possible.
+   - Be lightweight
+   - Allow for simple use in a variety of Stenography related applications.
+* Dictionary Handling
+  In order to run on the cheapest of microcontrollers Cheno must
+  provide as lightweight of a dictionary as possible. The dictionary
+  must support fast look ups (this is the primary concern), but
+  insertions should also be as fast as possible because it will be
+  useful should the user wish to add a word in real time.
+* TODO Strokes
+  In order to represent strokes Cheno will use 32-bit integers. The
+  individual bits will represent each of the keys pressed on the
+  stenotype for the given chord. Additionally some of the extra bits
+  will be used for flags such as a "start of word" flag representing
+  the first stroke when we switch to a new word. This representation
+  will allow for a very small memory footprint, and should allow for
+  easy manipulation / storage of the strokes.
+
+  The bits should be in steno order, but it is not clear how the bits
+  should be placed in the 32-bit int (or which direction to store the
+  bits). This will probably end up being whatever is most convenient
+  for look ups / reading from a device. Since shift registers will
+  very likely be used in order to save pins it makes sense to put the
+  bits in the lower end of the 32-bit integer. Which way these bits
+  are stored doesn't really matter because we will just use these
+  lower bits as the keys to the dictionary. It may be convenient to
+  have them reversed so that the lowest bit represents S- because then
+  it's easy to shift them off, but if we need to check if a specific
+  key is pressed we're probably just going to use bit masks
+  anyway... So it doesn't really matter. I am leaning towords the
+  lowest bit being the last key in steno order since that makes some
+  sense from a debugging perspective to see which keys are pressed. On
+  the other hand the other way the number of the bit refers to the
+  number of the key in steno order, which is actually very elegant and
+  appealing, so maybe that's best!
+* Translation
+  The "translation" that Cheno does relies upon dictionary look ups,
+  and history in order to look up words in the dictionary. For single
+  stroke words the look up is simply one to one for the current chord
+  being pressed and the entry in the dictionary, however matters are
+  complicated significantly by the fact that many words will actually
+  use multiple strokes. Some issues arise:
+
+  - How do we know when to break and decide we are starting on a new word?
+  - How do we keep track of what the previous strokes for a multi-stroke word were?
+  - How do we correct words when a second stroke involves changes to the current translation?
+  - What about undo!?
+
+  The most obvious means to handle this is by marking the first stroke
+  as the "start stroke" of a word (for instance if we are representing
+  each stroke with a 4 byte integer we could have one of the upper
+  bits be a flag for this). Then for subsequent strokes we can go back
+  to the start stroke, note all of the strokes from the "start stroke"
+  to the latest stroke, and attempt to look up this sequence of
+  strokes in the dictionary. If this multi-stroke is found in the
+  dictionary we can use this translation, but otherwise we must mark
+  the latest stroke as a "start stroke" and look up that stroke in the
+  dictionary (if it has no dictionary entry we should just output the
+  representation of the stroke). Informally, whenever we mark a "start
+  stroke" this is the beginning of a new word / entry in the
+  dictionary.
+
+  In order to implement corrections (both undo and corrections for
+  outputs from previous strokes in multi-stroke words) we will look
+  for the last "start stroke" and perform the previous dictionary look
+  up. We can then determine the length of the translation for the
+  sequence of strokes and delete that many characters. If this is for
+  an undo we should then delete the previous stroke from the history,
+  and then output the dictionary look up for the current set of
+  strokes. If this is for adding an additional stroke to a word we
+  should add the stroke to the history and output the new translation.
+
+  For corrections I don't think we should do anything complicated like
+  figuring out the minimum number of characters we need to delete and
+  replace. This will add unneeded complexity for something which is
+  unlikely to provide any real performance benefit -- we can probably
+  just blast the key presses over USB more than quickly enough for
+  this to not matter in the slightest.
+* History
+  We need to be able to implement history. This is needed for
+  translation, but history files may also be of use.
+* Issues
+  - No way to know about focus. If the user switches between
+    applications the history won't know that / be able to account for
+    it with things like undo and multi-stroke words. We can maybe add
+    special strokes to keep track of a focus switch (or they would at
+    least appear in a history file so people could sort it out
+    afterwards).
