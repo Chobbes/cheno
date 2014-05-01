@@ -21,8 +21,65 @@
   provide as lightweight of a dictionary as possible. The dictionary
   must support fast look ups (this is the primary concern), but
   insertions should also be as fast as possible because it will be
-  useful should the user wish to add a word in real time.
-* TODO Strokes
+  useful should the user wish to add a word in real time. Deletion is
+  probably a good idea as well, but I don't think it is necessary for
+  it to be particularly speedy.
+
+  Dictionaries will likely be stored on SD cards, and we may store
+  them in raw blocks on the SD card instead of going through a file
+  system. Using a simple FAT filesystem may be a good idea as it would
+  easily allow for somebody to move dictionaries on and off of their
+  SD card. However, it might be best to just use raw blocks and
+  provide a program for storing this information on the SD card.
+
+  SD card accesses are going to be expensive, so ideally we want to
+  limit them as much as possible. We want as few SD card accesses per
+  stroke as possible. This should be considered when designing the
+  dictionary.
+
+  In the future we might want to consider using Red-Black trees to
+  store the dictionaries as they provide better guarantees about the
+  performance than a naive binary tree. However, for simplicity we
+  will start with the naive binary trees -- in fact there is a good
+  chance that these will be sufficient.
+
+  The current idea is to have a binary tree (possibly a fancy self
+  balancing one) for each stroke. That is, we have a binary tree
+  holding all of the possible first chords. Each node of this binary
+  tree contains binary trees for the next possible chords (if
+  any). The advantage of this is that we can keep track of the current
+  index of our dictionary look up and then we only have to go one
+  additional step in the dictonary's trees for each additional
+  stroke. It then becomes trivial to find the next word, we either
+  look up the next stroke from the current place, and if it's there we
+  use that word. If it's not there we just start from the root of the
+  tree again.
+
+  We should store the parent node for each node as well. This will
+  help when we need to do stuff with *. Thus for each node we need the
+  following information:
+
+  - Parent node.
+  - Left and right children indices (these are for "same stroke" children).
+  - Index for root of "next stroke" tree.
+  - The stroke represented by the current node.
+  - Perhaps some extra information (for instance Red / Black).
+  - The actual text / length of text.
+
+  We will use an index of 0 to represent node's which don't exist. I
+  think 64 bytes is sufficient, and if need be the translation text
+  can flow into a special "text" node adjacent to this.
+
+  Defrag involves changing ids?
+
+  64 byte blocks should usually be sufficient, and in the case that
+  they are not the next block over will be used to store the text
+  instead. In this case another SD card read is fairly unlikely as we
+  will have read 512 bytes in at a time, and the next block is likely
+  contained within this full SD card block. If it's not we will
+  probably have at most one more SD card read, which should hopefully
+  be fast enough for this to not matter.
+* Strokes
   In order to represent strokes Cheno will use 32-bit integers. The
   individual bits will represent each of the keys pressed on the
   stenotype for the given chord. Additionally some of the extra bits
@@ -31,23 +88,11 @@
   will allow for a very small memory footprint, and should allow for
   easy manipulation / storage of the strokes.
 
-  The bits should be in steno order, but it is not clear how the bits
-  should be placed in the 32-bit int (or which direction to store the
-  bits). This will probably end up being whatever is most convenient
-  for look ups / reading from a device. Since shift registers will
-  very likely be used in order to save pins it makes sense to put the
-  bits in the lower end of the 32-bit integer. Which way these bits
-  are stored doesn't really matter because we will just use these
-  lower bits as the keys to the dictionary. It may be convenient to
-  have them reversed so that the lowest bit represents S- because then
-  it's easy to shift them off, but if we need to check if a specific
-  key is pressed we're probably just going to use bit masks
-  anyway... So it doesn't really matter. I am leaning towords the
-  lowest bit being the last key in steno order since that makes some
-  sense from a debugging perspective to see which keys are pressed. On
-  the other hand the other way the number of the bit refers to the
-  number of the key in steno order, which is actually very elegant and
-  appealing, so maybe that's best!
+  Bits should be in steno order, with the least significant bit
+  representing the first character in the steno order. The number pad
+  bit occurs after the others. Steno order is given by:
+
+  : STKPWHRAO*EUFRPBLGTSDZ#
 * Translation
   The "translation" that Cheno does relies upon dictionary look ups,
   and history in order to look up words in the dictionary. For single
