@@ -130,6 +130,22 @@
   strokes. If this is for adding an additional stroke to a word we
   should add the stroke to the history and output the new translation.
 
+  There may be a case where the dictionary has an entry for, say, a
+  single stroke word and a three stroke word which start with the same
+  strokes, but the middle stroke is also used in another word. In this
+  case the dictionary should have an entry for the word at two strokes
+  in the three stroke word. This entry will have a flag set that
+  represents the fact that these two strokes aren't technically an
+  entry in the dictionary, but there might be a larger one. In this
+  case we shouldn't type anything, and wait for the next stroke. If
+  the next stroke would create the three stroke word then everything
+  continues as usual, however if we get to the point where there is no
+  entry in this particular branch of the dictionary then we must
+  backtrack to find the first set of strokes that actually had an
+  entry, and we write that word -- this is the last stroke in the
+  word, and the next stroke (we have to remember the other strokes) is
+  a "start stroke".
+
   For corrections I don't think we should do anything complicated like
   figuring out the minimum number of characters we need to delete and
   replace. This will add unneeded complexity for something which is
