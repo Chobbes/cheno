@@ -57,4 +57,11 @@ typedef struct StringEntry {
     uint32_t next;
 } StringEntry;
 
+
+/* Returns id of stroke, 0 if no stroke. */
+uint32_t lookup_stroke(uint32_t root, uint32_t stroke);
+
+/* Returns the number of bytes written into the buffer. */
+size_t extract_string(uint32_t id, char *buffer, size_t buffer_size);
+
 #endif
