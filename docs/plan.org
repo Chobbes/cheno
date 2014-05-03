@@ -155,6 +155,9 @@
 * History
   We need to be able to implement history. This is needed for
   translation, but history files may also be of use.
+* Porting
+  In order to port the dictionary you must write an appropriate
+  index.h
 * Issues
   - No way to know about focus. If the user switches between
     applications the history won't know that / be able to account for
