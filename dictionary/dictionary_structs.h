@@ -38,13 +38,16 @@ typedef struct DictEntry {
     /* Parent index */
     uint32_t parent;
 
-    /* Children */
+    /* Children -- same stroke number */
     uint32_t left;
     uint32_t right;
 
+    /* For next stroke */
+    uint32_t root;
+
     /* String information -- length is 0 if there is no entry here. */
     uint32_t length;
-    char entry[36];
+    char entry[32];
 
     uint32_t next;  /* id for next chunk of the string if necessary. */
 } DictEntry;
