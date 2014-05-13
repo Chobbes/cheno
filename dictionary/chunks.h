@@ -25,10 +25,11 @@
 
 */
 
-#ifndef INDEX_H
-#define INDEX_H
+#ifndef CHUNKS_H
+#define CHUNKS_H
 
 #include "dictionary_structs.h"
+
 
 /*
   Function to initialize chunks for the dictionary. This performs any
@@ -49,6 +50,16 @@ int initialize_chunks();
  */
 
 int fetch_chunk(uint32 id, void *buffer);
+
+
+/*
+  This function is the same as fetch_chunk, but it always fetches the
+  root chunk.
+
+  Return value is 0 on success.
+ */
+
+int fetch_root(void *buffer);
 
 
 /*
