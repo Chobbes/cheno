@@ -30,7 +30,7 @@
 
 #include <stdint.h>
 
-/* Strings stored in the dictionary are not NULL terminated. */
+/* This struct must be 128 bytes! */
 typedef struct DictEntry {
     uint32_t stroke;
     uint32_t flags;
@@ -47,15 +47,15 @@ typedef struct DictEntry {
 
     /* String information -- length is 0 if there is no entry here. */
     uint32_t length;
-    char entry[32];
+    char entry[96]; /* Stored strings are not NULL terminated. */
 
     uint32_t next;  /* id for next chunk of the string if necessary. */
 } DictEntry;
 
 
-/* May need several string entries to fit entry. Linked list. */
+/* May need several string entries to fit entry. Linked list. Also 128 bytes. */
 typedef struct StringEntry {
-    char entry[60];
+    char entry[124];
     uint32_t next;  /* id for next chunk of the string if necessary. */
 } StringEntry;
 
