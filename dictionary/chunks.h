@@ -63,6 +63,13 @@ int fetch_root(void *buffer);
 
 
 /*
+  This function returns the id of the root.
+ */
+
+uint32_t fetch_root_id();
+
+
+/*
   Function to create a new chunk in the index. Buffer is a pointer to
   whatever memory you wish to store in this new chunk. If buffer is
   NULL nothing is written to the chunk by this function.
