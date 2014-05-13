@@ -34,8 +34,21 @@
 /*
   Function to fetch the chunk of memory for the given id, and store it
   in buffer. Buffer must have a size of at least 64 bytes.
+
+  Return value is 0 on success.
  */
 
 int get_index(uint32 id, void *buffer);
+
+
+/*
+  Function to create a new chunk in the index. Buffer is a pointer to
+  whatever memory you wish to store in this new chunk. If buffer is
+  NULL nothing is written to the chunk by this function.
+
+  Returns the id of the new chunk.
+ */
+
+uint32_t create_chunk(void *buffer);
 
 #endif
