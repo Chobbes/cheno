@@ -53,7 +53,8 @@ uint32_t lookup_stroke(uint32_t start_id, uint32_t stroke);
   that can be stored in the buffer safely.
 
   Returns the number of bytes written into the buffer. The id must be
-  to a DictEntry chunk.
+  to a DictEntry chunk. If buffer_size is too small and can not hold
+  the entire entry this function will return 0 and do nothing else.
  */
 
 size_t extract_string(uint32_t id, char *buffer, size_t buffer_size);
