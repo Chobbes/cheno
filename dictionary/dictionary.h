@@ -31,10 +31,28 @@
 #include <stdint.h>
 
 
-/* Returns id of stroke, 0 if no stroke. */
-uint32_t lookup_stroke(uint32_t root, uint32_t stroke);
+/*
+  Look up the id of a stroke, 0 if there is no stroke.
 
-/* Returns the number of bytes written into the buffer. */
+  start_id is the id of the chunk to start the search (last stroke's
+  id), and stroke is the binary representation of the stroke to look
+  up.
+
+  Return value is the id of the stroke.
+ */
+
+uint32_t lookup_stroke(uint32_t start_id, uint32_t stroke);
+
+
+/*
+  Get the string for the given dictionary entry's id. The string is
+  stored in buffer, and buffer_size represents the amount of bytes
+  that can be stored in the buffer safely.
+
+  Returns the number of bytes written into the buffer. The id must be
+  to a DictEntry chunk.
+ */
+
 size_t extract_string(uint32_t id, char *buffer, size_t buffer_size);
 
 #endif
