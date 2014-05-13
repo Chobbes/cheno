@@ -29,7 +29,6 @@
 #define DICTIONARY_H
 
 #include <stdint.h>
-#include "index.h"
 
 
 /* Returns id of stroke, 0 if no stroke. */
