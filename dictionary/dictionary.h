@@ -29,33 +29,7 @@
 #define DICTIONARY_H
 
 #include <stdint.h>
-
-
-/* Strings stored in the dictionary are not NULL terminated. */
-typedef struct DictEntry {
-    uint32_t stroke;
-    uint32_t flags;
-
-    /* Parent index */
-    uint32_t parent;
-
-    /* Children */
-    uint32_t left;
-    uint32_t right;
-
-    /* String information -- length is 0 if there is no entry here. */
-    uint32_t length;
-    char entry[36];
-
-    uint32_t next;  /* id for next chunk of the string if necessary. */
-} DictEntry;
-
-
-/* May need several string entries to fit entry. Linked list. */
-typedef struct StringEntry {
-    char entry[60];
-    uint32_t next;
-} StringEntry;
+#include "index.h"
 
 
 /* Returns id of stroke, 0 if no stroke. */
