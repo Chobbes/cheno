@@ -32,11 +32,14 @@
 
 
 /*
-  Look up the id of a stroke, 0 if there is no stroke.
+  Look up the id of a stroke, 0 if there is no stroke. If there was no
+  such stroke it means we have hit a word boundary, and will have to
+  look up from the root of the dictionary.
 
   start_id is the id of the chunk to start the search (last stroke's
   id), and stroke is the binary representation of the stroke to look
-  up.
+  up. If the start_id is 0, then the stroke look up occurs from the
+  root.
 
   Return value is the id of the stroke.
  */
