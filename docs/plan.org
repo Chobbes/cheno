@@ -79,6 +79,9 @@
   contained within this full SD card block. If it's not we will
   probably have at most one more SD card read, which should hopefully
   be fast enough for this to not matter.
+
+  Might also be a good idea to have a special undo node, which stores
+  the key strokes that are necessary to undo the stroke.
 * Strokes
   In order to represent strokes Cheno will use 32-bit integers. The
   individual bits will represent each of the keys pressed on the
