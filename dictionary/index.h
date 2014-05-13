@@ -30,6 +30,16 @@
 
 #include "dictionary_structs.h"
 
+/*
+  Function to initialize chunks for the dictionary. This performs any
+  necessary setup (like perhaps reading a block with information on
+  it).
+
+  Return value is 0 on success.
+ */
+
+int initialize_chunks();
+
 
 /*
   Function to fetch the chunk of memory for the given id, and store it
@@ -38,7 +48,7 @@
   Return value is 0 on success.
  */
 
-int get_index(uint32 id, void *buffer);
+int fetch_chunk(uint32 id, void *buffer);
 
 
 /*
