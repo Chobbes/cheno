@@ -53,7 +53,7 @@ typedef struct DictEntry {
 /* May need several string entries to fit entry. Linked list. */
 typedef struct StringEntry {
     char entry[60];
-    uint32_t next;
+    uint32_t next;  /* id for next chunk of the string if necessary. */
 } StringEntry;
 
 #endif
