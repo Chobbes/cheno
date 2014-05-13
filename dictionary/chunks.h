@@ -44,7 +44,7 @@ int initialize_chunks();
 
 /*
   Function to fetch the chunk of memory for the given id, and store it
-  in buffer. Buffer must have a size of at least 64 bytes.
+  in buffer. Buffer must have a size of at least 128 bytes.
 
   Return value is 0 on success.
  */
