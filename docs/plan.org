@@ -37,23 +37,18 @@
   stroke as possible. This should be considered when designing the
   dictionary.
 
-  In the future we might want to consider using Red-Black trees to
-  store the dictionaries as they provide better guarantees about the
-  performance than a naive binary tree. However, for simplicity we
-  will start with the naive binary trees -- in fact there is a good
-  chance that these will be sufficient.
-
-  The current idea is to have a binary tree (possibly a fancy self
-  balancing one) for each stroke. That is, we have a binary tree
-  holding all of the possible first chords. Each node of this binary
-  tree contains binary trees for the next possible chords (if
-  any). The advantage of this is that we can keep track of the current
-  index of our dictionary look up and then we only have to go one
-  additional step in the dictonary's trees for each additional
-  stroke. It then becomes trivial to find the next word, we either
-  look up the next stroke from the current place, and if it's there we
-  use that word. If it's not there we just start from the root of the
-  tree again.
+  The current idea is to have a binary tree (Red-Black trees seem like
+  a good choice, as they provide good guarantees, and are easily
+  implemented) for each stroke. That is, we have a binary tree holding
+  all of the possible first chords. Each node of this binary tree
+  contains binary trees for the next possible chords (if any). The
+  advantage of this is that we can keep track of the current index of
+  our dictionary look up and then we only have to go one additional
+  step in the dictonary's trees for each additional stroke. It then
+  becomes trivial to find the next word, we either look up the next
+  stroke from the current place, and if it's there we use that
+  word. If it's not there we just start from the root of the tree
+  again.
 
   We should store the parent node for each node as well. This will
   help when we need to do stuff with *. Thus for each node we need the
@@ -81,7 +76,10 @@
   be fast enough for this to not matter.
 
   Might also be a good idea to have a special undo node, which stores
-  the key strokes that are necessary to undo the stroke.
+  the key strokes that are necessary to undo the stroke. For instance
+  if you have a chord which runs the undo command on an application
+  (the usual ctl + z), then maybe it makes sense to have the stenotype
+  run the redo command when undoing this stroke.
 * Strokes
   In order to represent strokes Cheno will use 32-bit integers. The
   individual bits will represent each of the keys pressed on the
@@ -92,8 +90,8 @@
   easy manipulation / storage of the strokes.
 
   Bits should be in steno order, with the least significant bit
-  representing the first character in the steno order. The number pad
-  bit occurs after the others. Steno order is given by:
+  representing the first character in the steno order. The number
+  bar's bit occurs after the others. Steno order is given by:
 
   : STKPWHRAO*EUFRPBLGTSDZ#
 * Translation
@@ -167,4 +165,5 @@
     it with things like undo and multi-stroke words. We can maybe add
     special strokes to keep track of a focus switch (or they would at
     least appear in a history file so people could sort it out
-    afterwards).
+    afterwards). We could have a number of different focuses, and
+    select between them with the number bar.
